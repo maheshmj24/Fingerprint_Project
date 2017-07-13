@@ -81,7 +81,7 @@ struct fingie
 void calculate_descriptors(string dest,fingie& f)
     {
         Mat input = imread(dest, IMREAD_GRAYSCALE);
-        //imshow(f.name, input); waitKey(0);
+        imshow(f.name, input); waitKey(0);
         Mat input_binary;
         threshold(input, input_binary, 0, 255, CV_THRESH_BINARY_INV | CV_THRESH_OTSU);
 
@@ -89,7 +89,7 @@ void calculate_descriptors(string dest,fingie& f)
         Mat container(input.rows, input.cols*2, CV_8UC1);
         input.copyTo( container( Rect(0, 0, input.cols, input.rows) ) );
         input_binary.copyTo( container( Rect(input.cols, 0, input.cols, input.rows) ) );
-        //imshow("input versus binary", container); waitKey(0);
+        imshow("input versus binary", container); waitKey(0);
 
         // Now apply the thinning algorithm
         Mat input_thinned = input_binary.clone();
@@ -98,7 +98,7 @@ void calculate_descriptors(string dest,fingie& f)
         // Compare both
         input_binary.copyTo( container( Rect(0, 0, input.cols, input.rows) ) );
         input_thinned.copyTo( container( Rect(input.cols, 0, input.cols, input.rows) ) );
-        //imshow("binary versus thinned", container); waitKey(0);
+        imshow("binary versus thinned", container); waitKey(0);
 
         // Now lets detect the strong minutiae using Haris corner detection
         Mat harris_corners, harris_normalised;
@@ -107,7 +107,7 @@ void calculate_descriptors(string dest,fingie& f)
         normalize(harris_corners, harris_normalised, 0, 255, NORM_MINMAX, CV_32FC1, Mat());
 
         // Select the strongest corners that you want
-        int threshold_harris = 125;
+        int threshold_harris = 150;
         vector<KeyPoint> keypoints;
 
         // Make a color clone for visualisation purposes
@@ -128,16 +128,17 @@ void calculate_descriptors(string dest,fingie& f)
             }
         }
                             
-        //imshow("temp", harris_c); waitKey(0);
+        imshow("temp", harris_c); waitKey(0);
 
                         
-        // Compare both
+        /*// Compare both
         Mat ccontainer(input.rows, input.cols*2, CV_8UC3);
         Mat input_thinned_c = input_thinned.clone();
         cvtColor(input_thinned_c, input_thinned_c, CV_GRAY2BGR);
         input_thinned_c.copyTo( ccontainer( Rect(0, 0, input.cols, input.rows) ) );
         harris_c.copyTo( ccontainer( Rect(input.cols, 0, input.cols, input.rows) ) );
-        //imshow("thinned versus selected corners", ccontainer); waitKey(0);
+        imshow("thinned versus selected corners", ccontainer); waitKey(0);
+        */
 
         // Calculate the ORB descriptor based on the keypoint
         Ptr<Feature2D> orb_descriptor = ORB::create();
@@ -163,7 +164,7 @@ int main() //int argc, const char** argv )
         switch(ch)
             {
             case 1: 
-                {   for(int k=1;k<10;k++)
+                {   for(int k=1;k<=8;k++)
                         {
                         //cout<<"\nEnter the image path (./database/101_1.tif):";
 
@@ -171,7 +172,7 @@ int main() //int argc, const char** argv )
 
                         //cin>>dest;
 
-                        dest="./database/10"+to_string(k)+"_1.tif";
+                        dest="./database/012_3_"+to_string(k)+".tif";
                         cout<<dest;
                         //cout<<"Enter the name:";
                         //cin>>f[counter].name;
